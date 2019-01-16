@@ -1,0 +1,53 @@
+declare @a int = 0
+Print @a
+set @a = 1
+Print @a
+Select 1
+SELECT @a = id_prod from Products
+Print @a
+If @a > 100
+BEGIN
+print 1
+END
+ELSE
+BEGIN
+print 0
+END
+WHILE @a>0
+Begin
+print @a
+set @a= @a-100
+end
+
+
+
+declare @a int = 0
+declare @b int = 1
+declare @c int = 1
+while @c <100
+Begin
+print @c
+set @c = @a+@b
+set @a = @b
+set @b = @c
+end
+
+
+declare @Cur_price money
+declare @sum_price money = 0
+declare @c_prod int = 0
+declare CT CURSOR for SELECT  Price from Products 
+
+OPEN CT
+
+FETCH NEXT FROM CT INTO @cur_price
+WHILE @@FETCH_STATUS>=0
+BEGIN
+	Set @sum_price = @sum_price + @cur_price
+	Set @c_prod = @c_prod + 1
+	FETCH NEXT FROM CT INTO @cur_price
+END
+print @sum_price/@c_prod
+
+CLOSE CT
+DEALLOCATE CT
