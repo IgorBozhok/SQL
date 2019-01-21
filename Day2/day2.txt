@@ -1,0 +1,101 @@
+*****************************************************************************************************
+DECLARE @Model nvarchar(500)
+DECLARE @Category nvarchar(500)
+DECLARE @Brand nvarchar(500)
+DECLARE @Color nvarchar(500)
+
+DECLARE @Price money 
+DECLARE @Id_Cat int 
+DECLARE @Id_Brand int
+DECLARE @Id_Color int 
+
+DECLARE CT CURSOR FOR SELECT [Model], [Category], [Brand], [Color], [Price] FROM ProductsTemp
+
+OPEN CT
+FETCH NEXT FROM CT INTO @Model, @Category, @Brand, @Color, @Price
+
+WHILE @@FETCH_STATUS >= 0
+BEGIN  
+	SET @Id_Cat = null
+	SET @Id_Brand = null
+	SET @Id_Color = null
+	SELECT @Id_Cat = Id_cat FROM Categories
+	WHERE Categories.Name = @Category
+	IF @Id_Cat  IS NULL 
+		BEGIN 
+		INSERT INTO [dbo].[Categories]
+					([Name])
+					VALUES
+					(@Category)
+					SET @Id_Cat =  @@IDENTITY
+		END
+
+	SELECT @Id_Brand = id_brend FROM Brends
+	WHERE Brends.Name = @Brand
+	IF @Id_Brand IS NULL
+		BEGIN
+			INSERT INTO [dbo].[Brends]
+						([Name])
+						VALUES
+						(@Brand)
+						SET @Id_Brand = @@IDENTITY
+		END
+
+	SELECT @Id_Color = id_color From Colors
+	WHERE Colors.Name = @Color
+	IF @Id_Color IS NULL 
+		BEGIN
+			INSERT INTO [dbo].[Colors]
+						(Name)
+						VALUES
+						(@Color)
+						SET @Id_Color = @@IDENTITY
+		END
+
+	INSERT INTO [dbo].[Products]
+				([Name],
+				[Price],
+				[id_color],
+				[id_brend],
+				[id_cat])
+				VALUES
+				(@Model,
+				@Price,
+				@Id_Color,
+				@Id_Brand,
+				@Id_Cat)
+
+	FETCH NEXT FROM CT INTO @Model, @Category, @Brand, @Color, @Price
+END
+
+CLOSE CT
+DEALLOCATE CT
+
+*************************************************************************************************************
+
+USE [AleinikInternetShop7]
+GO
+
+
+DROP TABLE  #Products
+
+CREATE TABLE #Products(
+	[Id_prod] [int],
+	[Name] [nvarchar](500) NOT NULL,
+	[Price] [money] NOT NULL,
+	[Weight] [decimal](18, 3) NULL,
+	[Size] [nvarchar](500) NULL,
+	[Id_color] [int] NOT NULL,
+	[Id_brend] [int] NOT NULL,
+	[Id_cat] [int] NOT NULL,
+	[Description] [nvarchar](max) NULL,
+	[Picture] [varbinary](max) NULL)
+
+GO
+
+SET ANSI_PADDING OFF
+GO
+
+insert into #Products
+
+select * from Products
