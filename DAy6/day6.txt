@@ -1,0 +1,67 @@
+CREATE TRIGGER CustrDEl 
+   ON  Customers
+   AFTER DELETE
+AS 
+BEGIN
+	IF (EXISTS (select * from deleted INNER join Orders on deleted.Id_cus = Orders.Id_cus ))
+	BEGIN 
+		rollback TRAN
+	end
+END
+GO
+
+
+ÄÇ 
+#1
+
+
+CREATE PROCEDURE AddNewInfo 
+	@Date date,
+	@id_user int,
+	@id_prod int,
+	@CountProd int
+AS
+BEGIN
+	DECLARE @id_ord int
+	SET NOCOUNT ON;
+	INSERT INTO Orders(Order_form_date,Id_cus)
+	VALUES (@Date,@id_user)
+	SET @id_ord =  @@IDENTITY
+	INSERT INTO 
+	SELECT <@Param1, sysname, @p1>, <@Param2, sysname, @p2>
+END
+GO
+
+#2
+CREATE FUNCTION GetNameCountCat()
+
+RETURNS TABLE 
+AS
+RETURN 
+(
+select Max(Categories.Name) as NameCat, Count(Products.Name) as CountCat from Categories
+Inner Join Products 
+On Categories.Id_cat = Products.Id_cat 
+Group by Categories.id_cat
+)
+GO
+
+Select * from dbo.GetNameCountCat()
+
+#3
+
+CREATE FUNCTION Factor(@iNumber int)
+RETURNS INT
+AS
+BEGIN
+DECLARE @i  int
+    IF @iNumber <= 1
+        SET @i = 1
+    ELSE
+        SET @i = @iNumber * dbo.Factor(@iNumber - 1)
+RETURN @i
+END
+
+go 
+
+select dbo.Factor(5) 
